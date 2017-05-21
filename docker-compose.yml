@@ -1,0 +1,9 @@
+version: '2'
+services:
+  cell:
+    build: .
+    command: bundle exec rails s -p 6000 -b '0.0.0.0'
+    volumes:
+      - .:/cell
+    ports:
+      - "3000:3000"
