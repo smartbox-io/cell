@@ -6,3 +6,4 @@ ADD Gemfile /cell/Gemfile
 ADD Gemfile.lock /cell/Gemfile.lock
 RUN bundle install
 ADD . /cell
+ENV PATH "/cell/bin:${PATH}"
