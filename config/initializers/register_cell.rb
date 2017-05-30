@@ -3,6 +3,7 @@ Brain.request(path: "/cluster-api/v1/cells/discovery",
               payload: {
                 cell: {
                   uuid: Cell.machine_id,
-                  fqdn: Cell.fqdn
+                  fqdn: Cell.fqdn,
+                  volumes: Cell.storage_volumes
                 }
               })

@@ -19,8 +19,8 @@ class Cell
         fs = Sys::Filesystem.stat mountpoint
         [
           mountpoint, {
-            total: fs.blocks * fs.block_size,
-            available: fs.blocks_available * fs.block_size
+            total_capacity: (fs.blocks * fs.block_size) / 1000 / 1000 / 1000,
+            available_capacity: (fs.blocks_available * fs.block_size) / 1000 / 1000 / 1000
           }
         ]
       end
