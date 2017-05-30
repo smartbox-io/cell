@@ -8,3 +8,4 @@ services:
     network_mode: host
     volumes:
       - .:/cell
+      - /tmp/storage1:/storage1
