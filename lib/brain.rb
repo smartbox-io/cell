@@ -5,12 +5,12 @@ class Brain
   def self.request(path:, method: :get, payload: nil, query: nil, access_token: nil)
     uri = URI("#{ENV["BRAIN_URL"]}#{path}")
     uri.query = URI.encode_www_form(query) if query
-    http = Net::HTTP.new(uri.host, uri.port)
+    http = Net::HTTP.new uri.host, uri.port
     req = case method
           when :get
-            Net::HTTP::Get.new(uri.path)
+            Net::HTTP::Get.new uri.path
           when :post
-            Net::HTTP::Post.new(uri.path, "Content-Type" => "application/json")
+            Net::HTTP::Post.new uri.path, { "Content-Type" => "application/json" }
           else
             raise "unknown method"
           end
