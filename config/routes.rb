@@ -1,3 +1,11 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  namespace :api do
+    namespace :v1 do
+      resources :objects, only: %i(create), param: :uuid do
+        member do
+          resource :download, only: :show, controller: "objects/downloads"
+        end
+      end
+    end
+  end
 end
