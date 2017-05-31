@@ -6,8 +6,16 @@ class ApplicationController < ActionController::API
 
   private
 
+  def ok
+    head :ok
+  end
+
   def forbidden
     head :forbidden
+  end
+
+  def not_found
+    head :not_found
   end
 
   def load_jwt

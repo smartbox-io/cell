@@ -8,6 +8,7 @@ class Api::V1::ObjectsController < ApplicationController
     File.open("/storage1/#{object_name}", "w") do |f|
       f.write object
     end
+    ok
   end
 
   private

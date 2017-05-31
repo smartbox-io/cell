@@ -8,9 +8,9 @@ class Brain
     http = Net::HTTP.new uri.host, uri.port
     req = case method
           when :get
-            Net::HTTP::Get.new uri.path
+            Net::HTTP::Get.new uri.request_uri
           when :post
-            Net::HTTP::Post.new uri.path, { "Content-Type" => "application/json" }
+            Net::HTTP::Post.new uri.request_uri, { "Content-Type" => "application/json" }
           else
             raise "unknown method"
           end
@@ -21,7 +21,7 @@ class Brain
       req.body = payload.to_json
     end
     response = http.request req
-    json_response = JSON.parse response.body, symbolize_names: true
+    json_response = JSON.parse response.body, symbolize_names: true rescue nil
     if block_given?
       yield response, json_response
     else
