@@ -13,7 +13,8 @@ class Api::V1::ObjectsController < ApplicationController
 
   def has_permissions?
     if !Brain.ok?(path: "/cluster-api/v1/upload-tokens/#{params[:upload_token]}",
-                  query: { client_ip: request.remote_ip })
+                  query: { client_ip: request.remote_ip },
+                  access_token: @jwt)
       forbidden
     end
   end
