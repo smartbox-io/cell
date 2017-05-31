@@ -21,7 +21,7 @@ class Brain
       req.body = payload.to_json
     end
     response = http.request req
-    json_response = JSON.parse(response.body, symbolize_names: true)
+    json_response = JSON.parse response.body, symbolize_names: true
     if block_given?
       yield response, json_response
     else
