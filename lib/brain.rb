@@ -40,8 +40,8 @@ class Brain
   def self.ok?(path:, method: :get, payload: nil, query: nil, access_token: nil)
     request(path: path, method: method, payload: payload, query: query,
             access_token: access_token) do |response, json_response|
-      response.code.to_i.between?(200, 299).tap do |ok?|
-        yield json_response if ok? && block_given?
+      response.code.to_i.between?(200, 299).tap do |ok|
+        yield(json_response) if ok && block_given?
       end
     end
   end
