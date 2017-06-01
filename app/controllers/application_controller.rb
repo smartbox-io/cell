@@ -6,8 +6,12 @@ class ApplicationController < ActionController::API
 
   private
 
-  def ok
-    head :ok
+  def ok(payload: nil)
+    if payload
+      render json: payload, status: :ok
+    else
+      head :ok
+    end
   end
 
   def forbidden
