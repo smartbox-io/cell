@@ -12,6 +12,8 @@ gem 'jbuilder', '~> 2.5'
 gem 'sidekiq', '~> 5.0'
 gem 'thor', '~> 0.19'
 gem 'sys-filesystem', '~> 1.1.7'
+gem 'terminal-table', '~> 1.8'
+gem 'multipart-post', '~> 2.0'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
