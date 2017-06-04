@@ -8,6 +8,10 @@ class Api::V1::ObjectsController < ApplicationController
     File.open("#{@volume}/#{object_name}", "w") do |f|
       f.write object
     end
+    Brain.request path: "/cluster-api/v1/upload-tokens/#{params[:upload_token]}",
+                  method: :delete,
+                  query: { client_ip: request.remote_ip },
+                  access_token: @jwt
     ok
   end
 
