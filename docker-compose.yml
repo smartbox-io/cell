@@ -4,7 +4,8 @@ services:
     build: .
     command: bundle exec rails s -p 6000 -b '0.0.0.0'
     environment:
-      - BRAIN_URL=http://127.0.0.1:3000
+      - BRAIN_SERVICE_HOST=127.0.0.1
+      - BRAIN_SERVICE_PORT=3000
     network_mode: host
     volumes:
       - .:/cell

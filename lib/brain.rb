@@ -3,7 +3,7 @@ class Brain
   require "net/http"
 
   def self.request(path:, method: :get, payload: nil, query: nil, access_token: nil)
-    uri = URI("#{ENV["BRAIN_URL"]}#{path}")
+    uri = URI("http://#{ENV["BRAIN_SERVICE_HOST"]}:#{ENV["BRAIN_SERVICE_PORT"]}#{path}")
     uri.query = URI.encode_www_form(query) if query
     http = Net::HTTP.new uri.host, uri.port
     req = case method
