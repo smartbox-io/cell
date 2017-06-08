@@ -1,10 +1,15 @@
 class Cell
 
   require "socket"
+  require "securerandom"
   require "sys/filesystem"
 
-  def self.machine_id
-    File.read("/etc/machine-id").strip
+  def self.machine_uuid
+    File.read("/etc/brain/machine-uuid").strip
+  rescue Errno::ENOENT
+    SecureRandom.uuid.tap do |machine_uuid|
+      File.open("/etc/brain/machine-uuid", "w") { |f| f.write machine_uuid }
+    end
   end
 
   def self.fqdn
@@ -36,7 +41,7 @@ class Cell
 
   def self.storage_mountpoints
     Hash[
-      mountpoints.select { |_, mountpoint| mountpoint =~ /^\/storage\d+/ }
+      mountpoints.select { |_, mountpoint| mountpoint =~ /^\/volumes\/volume\d+/ }
     ]
   end
 
