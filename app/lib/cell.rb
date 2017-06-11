@@ -51,7 +51,7 @@ class Cell
 
   def self.storage_mountpoints
     Hash[
-      mountpoints.select { |_, mountpoint| mountpoint =~ /^\/volumes\/volume\d+/ }
+      mountpoints.select { |_, mountpoint| mountpoint =~ /^\/volumes/ }
     ]
   end
 

@@ -7,7 +7,7 @@ class Api::V1::ObjectsController < ApplicationController
     digest = Cell.digest_contents object_contents
     object_name = digest[:sha256sum]
     object_path = File.join @volume, object_name
-    File.open(object_path, "w") { |f| f.write object }
+    File.open(object_path, "w") { |f| f.write object_contents }
     Brain.request path: "/cluster-api/v1/objects",
                   method: :post,
                   payload: {
