@@ -1,14 +1,24 @@
 class Cell
 
   require "socket"
+  require "fileutils"
   require "securerandom"
   require "sys/filesystem"
 
+  def self.digest_content(contents)
+    {
+      md5sum: Digest::MD5.hexdigest(contents),
+      sha1sum: Digest::SHA1.hexdigest(contents),
+      sha256sum: Digest::SHA256.hexdigest(contents)
+    }
+  end
+
   def self.machine_uuid
-    File.read("/etc/brain/machine-uuid").strip
+    File.read("/etc/cell/machine-uuid").strip
   rescue Errno::ENOENT
+    FileUtils.mkdir_p "/etc/cell"
     SecureRandom.uuid.tap do |machine_uuid|
-      File.open("/etc/brain/machine-uuid", "w") { |f| f.write machine_uuid }
+      File.open("/etc/cell/machine-uuid", "w") { |f| f.write machine_uuid }
     end
   end
 
@@ -43,6 +53,38 @@ class Cell
     Hash[
       mountpoints.select { |_, mountpoint| mountpoint =~ /^\/volumes\/volume\d+/ }
     ]
+  end
+
+  def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)
+    uri = URI("http://#{cell_ip}:#{ENV["CELL_SERVICE_PORT"]}#{path}")
+    uri.query = URI.encode_www_form(query) if query
+    http = Net::HTTP.new uri.host, uri.port
+    req = case method
+          when :head
+            Net::HTTP::Head.new uri.request_uri
+          when :get
+            Net::HTTP::Get.new uri.request_uri
+          when :post
+            Net::HTTP::Post.new uri.request_uri, { "Content-Type" => "application/json" }
+          when :put
+            Net::HTTP::Put.new uri.request_uri, { "Content-Type" => "application/json" }
+          when :patch
+            Net::HTTP::Patch.new uri.request_uri, { "Content-Type" => "application/json" }
+          when :delete
+            Net::HTTP::Delete.new uri.request_uri
+          else
+            raise "unknown method"
+          end
+    if !%i(head get delete).include?(method) && payload
+      req.body = payload.to_json
+    end
+    response = http.request req
+    json_response = JSON.parse response.body, symbolize_names: true rescue nil
+    if block_given?
+      yield response, json_response
+    else
+      return response, json_response
+    end
   end
 
 end

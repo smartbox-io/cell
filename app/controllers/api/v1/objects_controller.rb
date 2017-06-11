@@ -3,14 +3,25 @@ class Api::V1::ObjectsController < ApplicationController
   before_action :has_permissions?
 
   def create
-    object = params[:object][:payload].read
-    object_name = Digest::SHA256.hexdigest object
-    File.open("#{@volume}/#{object_name}", "w") do |f|
-      f.write object
-    end
-    Brain.request path: "/cluster-api/v1/upload-tokens/#{params[:upload_token]}",
-                  method: :delete,
-                  query: { client_ip: request.remote_ip },
+    object_contents = params[:object][:payload].read
+    digest = Cell.digest_contents object_contents
+    object_name = digest[:sha256sum]
+    object_path = File.join @volume, object_name
+    File.open(object_path, "w") { |f| f.write object }
+    Brain.request path: "/cluster-api/v1/objects",
+                  method: :post,
+                  payload: {
+                    client_ip: request.remote_ip,
+                    upload_token: params[:upload_token],
+                    object: {
+                      uuid: SecureRandom.uuid,
+                      name: params[:object][:payload].original_filename,
+                      size: File.size(object_path),
+                      md5sum: digest[:md5sum],
+                      sha1sum: digest[:sha1sum],
+                      sha256sum: digest[:sha256sum]
+                    }
+                  },
                   access_token: @jwt
     ok
   end
