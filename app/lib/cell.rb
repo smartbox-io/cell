@@ -5,7 +5,7 @@ class Cell
   require "securerandom"
   require "sys/filesystem"
 
-  def self.digest_content(contents)
+  def self.digest_contents(contents)
     {
       md5sum: Digest::MD5.hexdigest(contents),
       sha1sum: Digest::SHA1.hexdigest(contents),
@@ -13,12 +13,12 @@ class Cell
     }
   end
 
-  def self.machine_uuid
-    File.read("/etc/cell/machine-uuid").strip
+  def self.uuid
+    File.read("/etc/cell/uuid").strip
   rescue Errno::ENOENT
     FileUtils.mkdir_p "/etc/cell"
-    SecureRandom.uuid.tap do |machine_uuid|
-      File.open("/etc/cell/machine-uuid", "w") { |f| f.write machine_uuid }
+    SecureRandom.uuid.tap do |uuid|
+      File.open("/etc/cell/uuid", "w") { |f| f.write uuid }
     end
   end
 

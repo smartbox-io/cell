@@ -28,7 +28,7 @@ class ClusterApi::V1::Objects::DownloadController < ClusterApplicationController
   end
 
   def source_allowed?
-    forbidden if @source_cell_uuid != Cell.machine_uuid
+    forbidden if @source_cell_uuid != Cell.uuid
   end
 
   def target_ip_address_allowed?

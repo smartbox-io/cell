@@ -28,7 +28,7 @@ class ClusterApi::V1::ObjectsController < ClusterApplicationController
   end
 
   def target_allowed?
-    forbidden if @target_cell_uuid != Cell.machine_uuid
+    forbidden if @target_cell_uuid != Cell.uuid
   end
 
 end
