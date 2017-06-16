@@ -12,6 +12,8 @@ require "action_cable/engine"
 # require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
+require "ipaddr"
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -31,5 +33,7 @@ module Srv
     config.api_only = true
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.action_dispatch.trusted_proxies = ["127.0.0.1", "::1"].map { |proxy| IPAddr.new proxy }
   end
 end
