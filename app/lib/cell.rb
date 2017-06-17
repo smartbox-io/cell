@@ -56,7 +56,7 @@ class Cell
   end
 
   def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)
-    uri = URI("http://#{cell_ip}:#{ENV["CELL_SERVICE_PORT"]}#{path}")
+    uri = URI("http://#{cell_ip}#{path}")
     uri.query = URI.encode_www_form(query) if query
     http = Net::HTTP.new uri.host, uri.port
     req = case method
