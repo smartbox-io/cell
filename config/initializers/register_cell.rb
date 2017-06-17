@@ -5,6 +5,6 @@ Brain.request(path: "/cluster-api/v1/cells/discovery",
                   uuid: Cell.uuid,
                   fqdn: Cell.fqdn,
                   volumes: Cell.storage_volumes,
-                  ip_address: ENV["HOST_IP_ADDRESS"]
+                  public_ip_address: ENV["HOST_IP_ADDRESS"]
                 }
               })
