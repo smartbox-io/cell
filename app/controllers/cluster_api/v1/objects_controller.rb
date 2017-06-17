@@ -1,4 +1,4 @@
-class ClusterApi::V1::ObjectsController < ClusterApplicationController
+class ClusterApi::V1::ObjectsController < ClusterTokenlessApplicationController
 
   before_action :has_permissions?
   before_action :target_allowed?

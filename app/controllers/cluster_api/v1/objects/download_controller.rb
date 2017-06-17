@@ -1,4 +1,4 @@
-class ClusterApi::V1::Objects::DownloadController < ClusterApplicationController
+class ClusterApi::V1::Objects::DownloadController < ClusterTokenlessApplicationController
 
   before_action :has_permissions?
   before_action :object_matches?
