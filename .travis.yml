@@ -1,0 +1,11 @@
+language: ruby
+
+rvm:
+  - 2.2
+
+cache:
+  bundler: true
+
+script:
+  - bundle exec rspec spec
+  - bundle exec brakeman -zA
