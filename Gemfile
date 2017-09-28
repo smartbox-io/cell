@@ -25,4 +25,12 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+group :test do
+  gem 'rspec-rails'
+  gem 'brakeman'
+  gem 'shoulda'
+  gem 'factory_girl_rails'
+  gem 'codeclimate-test-reporter'
+end
+
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
