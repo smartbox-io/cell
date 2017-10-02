@@ -7,5 +7,6 @@ cache:
   bundler: true
 
 script:
+  - bundle exec rubocop -D
   - bundle exec rspec spec
   - bundle exec brakeman -zA

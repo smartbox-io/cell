@@ -1,0 +1,13 @@
+require:
+  - rubocop-rspec
+
+inherit_from:
+  - ./config/rubocop-suse.yml
+
+AllCops:
+  Exclude:
+    # Files that are out of our control and that are not excluded in the
+    # default config of rubocop.
+    - db/schema.rb
+    - db/migrate/*
+    - vendor/**/*
