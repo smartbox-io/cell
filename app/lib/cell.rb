@@ -1,5 +1,4 @@
 class Cell
-
   require "socket"
   require "fileutils"
   require "securerandom"
@@ -7,8 +6,8 @@ class Cell
 
   def self.digest_contents(contents)
     {
-      md5sum: Digest::MD5.hexdigest(contents),
-      sha1sum: Digest::SHA1.hexdigest(contents),
+      md5sum:    Digest::MD5.hexdigest(contents),
+      sha1sum:   Digest::SHA1.hexdigest(contents),
       sha256sum: Digest::SHA256.hexdigest(contents)
     }
   end
@@ -32,20 +31,22 @@ class Cell
     Hash[
       storage_mountpoints.values.map do |mountpoint|
         fs = Sys::Filesystem.stat mountpoint
-        [
-          mountpoint, {
-            total_capacity: (fs.blocks * fs.block_size) / 1000 / 1000 / 1000,
-            available_capacity: (fs.blocks_available * fs.block_size) / 1000 / 1000 / 1000
-          }
-        ]
+        [mountpoint, capacity(fs: fs)]
       end
     ]
   end
 
+  def self.capacity(fs:)
+    {
+      total_capacity:     (fs.blocks * fs.block_size) / 1000 / 1000 / 1000,
+      available_capacity: (fs.blocks_available * fs.block_size) / 1000 / 1000 / 1000
+    }
+  end
+
   def self.mountpoints
-    File.open("/proc/mounts", "r") { |f| f.readlines }.map do |line|
-      line =~ /^([^\s]+)\s+([^\s]+)/
-      [$1, $2]
+    File.open("/proc/mounts", "r", &:readlines).map do |line|
+      device, mountpoint = line.scan(/^([^\s]+)\s+([^\s]+)/)
+      [device, mountpoint]
     end
   end
 
@@ -56,35 +57,35 @@ class Cell
   end
 
   def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)
+    perform_request cell_ip: cell_ip, path: path, method: method, payload: payload, query: query
+    json_response = begin
+                      JSON.parse response.body, symbolize_names: true
+                    rescue JSON::ParserError
+                      nil
+                    end
+    return response, json_response unless block_given?
+    yield response, json_response
+  end
+
+  def self.perform_request(cell_ip:, path:, method:, payload:, query:)
     uri = URI("http://#{cell_ip}#{path}")
     uri.query = URI.encode_www_form(query) if query
     http = Net::HTTP.new uri.host, uri.port
-    req = case method
-          when :head
-            Net::HTTP::Head.new uri.request_uri
-          when :get
-            Net::HTTP::Get.new uri.request_uri
-          when :post
-            Net::HTTP::Post.new uri.request_uri, { "Content-Type" => "application/json" }
-          when :put
-            Net::HTTP::Put.new uri.request_uri, { "Content-Type" => "application/json" }
-          when :patch
-            Net::HTTP::Patch.new uri.request_uri, { "Content-Type" => "application/json" }
-          when :delete
-            Net::HTTP::Delete.new uri.request_uri
-          else
-            raise "unknown method"
-          end
-    if !%i(head get delete).include?(method) && payload
-      req.body = payload.to_json
-    end
-    response = http.request req
-    json_response = JSON.parse response.body, symbolize_names: true rescue nil
-    if block_given?
-      yield response, json_response
-    else
-      return response, json_response
-    end
+    req = build_request uri: uri, method: method
+    req.body = payload.to_json if !%i[head get delete].include?(method) && payload
+    http.request req
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def self.build_request(uri:, method:)
+    case method
+    when :head   then Net::HTTP::Head.new   uri.request_uri
+    when :get    then Net::HTTP::Get.new    uri.request_uri
+    when :post   then Net::HTTP::Post.new   uri.request_uri, "Content-Type" => "application/json"
+    when :put    then Net::HTTP::Put.new    uri.request_uri, "Content-Type" => "application/json"
+    when :patch  then Net::HTTP::Patch.new  uri.request_uri, "Content-Type" => "application/json"
+    when :delete then Net::HTTP::Delete.new uri.request_uri
+    end
+  end
+  # rubocop:enable Metrics/CyclomaticComplexity
 end

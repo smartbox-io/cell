@@ -4,6 +4,12 @@ require:
 inherit_from:
   - ./config/rubocop-suse.yml
 
+Documentation:
+  Enabled: False
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
 AllCops:
   Exclude:
     # Files that are out of our control and that are not excluded in the

@@ -1,0 +1,26 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "39b860b31db39a1036dfd88b102bc0ef62daac382c1406a85187bd12a7c01aca",
+      "check_name": "FileAccess",
+      "message": "Parameter value used in file name",
+      "file": "app/controllers/api/v1/objects_controller.rb",
+      "line": 9,
+      "link": "http://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.open(File.join(@volume, Cell.digest_contents(params[:object][:payload].read)[:sha256sum]), \"w\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Api::V1::ObjectsController",
+        "method": "create"
+      },
+      "user_input": "params[:object][:payload].read",
+      "confidence": "Weak",
+      "note": ""
+    }
+  ],
+  "updated": "2017-10-03 21:43:47 +0000",
+  "brakeman_version": "4.0.1"
+}

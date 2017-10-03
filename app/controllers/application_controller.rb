@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::API
-
   include ActionController::HttpAuthentication::Token::ControllerMethods
 
   before_action :load_jwt
@@ -23,9 +22,8 @@ class ApplicationController < ActionController::API
   end
 
   def load_jwt
-    authenticate_or_request_with_http_token do |jwt, options|
+    authenticate_or_request_with_http_token do |jwt, _|
       @jwt = jwt
     end
   end
-
 end
