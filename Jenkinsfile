@@ -48,4 +48,11 @@ pipeline {
       }
     }
   }
+  post {
+    always {
+      sh "docker rmi -f smartbox/cell:${GIT_COMMIT}"
+      sh "docker rmi -f registry.hub.docker.com/smartbox/cell"
+      sh "docker rmi -f registry.hub.docker.com/smartbox/cell:${GIT_COMMIT}"
+    }
+  }
 }
