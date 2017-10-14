@@ -41,7 +41,6 @@ pipeline {
       steps {
         script {
           docker.withRegistry("https://registry.hub.docker.com", "docker-hub-credentials") {
-            docker.image("smartbox/cell:${GIT_COMMIT}").push("${GIT_COMMIT}")
             docker.image("smartbox/cell:${GIT_COMMIT}").push("latest")
           }
         }
