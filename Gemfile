@@ -33,6 +33,7 @@ group :test do
   gem "rubocop"
   gem "rubocop-rspec"
   gem "shoulda"
+  gem "simplecov", require: false
 end
 
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
