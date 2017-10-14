@@ -10,6 +10,9 @@
 # Ignore coverage
 /coverage
 
+# Ignore rspec status
+/spec/examples.txt
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
