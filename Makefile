@@ -1,3 +1,5 @@
+SPEC ?= spec
+
 .PHONY: all build spec brakeman
 
 all: build spec brakeman
@@ -9,7 +11,7 @@ run:
 	docker run --rm -v `pwd`:/cell -it cell:latest bash
 
 spec:
-	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rspec
+	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rspec $(SPEC)
 
 rubocop:
 	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rubocop -D
