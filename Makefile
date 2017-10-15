@@ -8,7 +8,10 @@ build:
 	docker build -t cell .
 
 run:
-	docker run --rm -v `pwd`:/cell -it cell:latest bash
+	docker run --rm -v `pwd`:/cell -it cell:latest sh
+
+routes:
+	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rake routes
 
 spec:
 	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rspec $(SPEC)
