@@ -4,6 +4,10 @@ require:
 inherit_from:
   - ./config/rubocop-suse.yml
 
+RSpec/DescribeClass:
+  Exclude:
+    - ./spec/requests/**/*
+
 Documentation:
   Enabled: False
 

@@ -1,3 +1,6 @@
+require "rails_helper"
+require "rspec-rails"
+
 require "simplecov"
 SimpleCov.start "rails"
 
@@ -86,6 +89,8 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = :random
+
+  config.include RequestSpecHelper, type: :request
 
   # Seed global randomization in this process using the `--seed` CLI option.
   # Setting this allows you to use `--seed` to deterministically reproduce
