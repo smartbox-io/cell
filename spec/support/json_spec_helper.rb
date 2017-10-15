@@ -1,5 +1,5 @@
 module JsonSpecHelper
   def json
-    JSON.parse last_response.body
+    JSON.parse response.body, symbolize_names: true
   end
 end
