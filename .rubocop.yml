@@ -4,9 +4,9 @@ require:
 inherit_from:
   - ./config/rubocop-suse.yml
 
-RSpec/DescribeClass:
+Metrics/BlockLength:
   Exclude:
-    - ./spec/requests/**/*
+    - ./spec/**/*
 
 Documentation:
   Enabled: False
