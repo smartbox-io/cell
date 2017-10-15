@@ -90,6 +90,7 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = :random
 
+  config.include JsonSpecHelper, type: :request
   config.include RequestSpecHelper, type: :request
 
   # Seed global randomization in this process using the `--seed` CLI option.
