@@ -8,5 +8,5 @@ cache:
 
 script:
   - bundle exec rubocop -D
-  - bundle exec rspec spec
+  - bundle exec rspec
   - bundle exec brakeman -zA
