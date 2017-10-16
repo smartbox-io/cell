@@ -1,7 +1,8 @@
 require "simplecov"
 
-SimpleCov.coverage_dir = ENV["COVERAGE_DIR"] if ENV["COVERAGE_DIR"]
-SimpleCov.start "rails"
+SimpleCov.start "rails" do
+  coverage_dir ENV["COVERAGE_DIR"] if ENV["COVERAGE_DIR"]
+end
 
 require "rails_helper"
 require "rspec-rails"

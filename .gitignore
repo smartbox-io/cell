@@ -8,7 +8,7 @@
 /.bundle
 
 # Ignore coverage
-/coverage
+/coverage*
 
 # Ignore rspec status
 /spec/examples.txt
