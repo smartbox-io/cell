@@ -32,12 +32,12 @@ pipeline {
         }
         stage("Model specs") {
           steps {
-            sh("docker run --rm -e COVERAGE_DIR=/cell/coverage-models -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/models")
+            sh("docker run --rm -e COVERAGE=models -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/models")
           }
         }
         stage("Request specs") {
           steps {
-            sh("docker run --rm -e COVERAGE_DIR=/cell/coverage-requests -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/requests")
+            sh("docker run --rm -e COVERAGE=requests -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/requests")
           }
         }
         stage("All specs") {

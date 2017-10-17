@@ -17,10 +17,10 @@ spec:
 	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rspec $(SPEC)
 
 models:
-	docker run --rm -e COVERAGE_DIR=/cell/coverage-models -v `pwd`:/cell -it cell:latest bundle exec rspec spec/models
+	docker run --rm -e COVERAGE=models -v `pwd`:/cell -it cell:latest bundle exec rspec spec/models
 
 requests:
-	docker run --rm -e COVERAGE_DIR=/cell/coverage-requests -v `pwd`:/cell -it cell:latest bundle exec rspec spec/requests
+	docker run --rm -e COVERAGE=requests -v `pwd`:/cell -it cell:latest bundle exec rspec spec/requests
 
 rubocop:
 	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rubocop -D
