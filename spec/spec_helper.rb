@@ -1,7 +1,24 @@
 require "simplecov"
 
+class SubsetFilesFilter < SimpleCov::Filter
+  def matches?(source_file)
+    case filter_argument
+    when :models
+      source_file.filename !~ /app\/models/
+    when :requests
+      source_file.filename !~ /app\/controllers/
+    end
+  end
+end
+
 SimpleCov.start "rails" do
   coverage_dir ENV["COVERAGE_DIR"] if ENV["COVERAGE_DIR"]
+  case ENV["COVERAGE_DIR"]
+  when /coverage-models/
+    add_filter SubsetFilesFilter.new(:models)
+  when /coverage-requests/
+    add_filter SubsetFilesFilter.new(:requests)
+  end
 end
 
 require "rails_helper"
