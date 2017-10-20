@@ -1,5 +1,5 @@
-FROM ruby:alpine
-RUN apk add --update build-base mariadb-dev sqlite-dev nodejs tzdata && rm -rf /var/cache/apk/*
+FROM ruby:2
+RUN apt-get update -qq && apt-get install -y build-essential nodejs
 RUN mkdir /cell
 WORKDIR /cell
 ADD Gemfile /cell/Gemfile
