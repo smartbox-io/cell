@@ -1,5 +1,5 @@
 FROM ruby:2
-RUN apt-get update -qq && apt-get install -y build-essential nodejs
+RUN apt-get update -qq && apt-get install -y build-essential
 RUN mkdir /cell
 WORKDIR /cell
 ADD Gemfile /cell/Gemfile
