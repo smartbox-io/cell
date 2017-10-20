@@ -7,6 +7,8 @@ class SubsetFilesFilter < SimpleCov::Filter
       source_file.filename !~ /app\/models/
     when :requests
       source_file.filename !~ /app\/controllers/
+    when :lib
+      source_file.filename !~ /app\/lib/
     end
   end
 end
@@ -19,6 +21,9 @@ SimpleCov.start "rails" do
   when "requests"
     add_filter SubsetFilesFilter.new(:requests)
     coverage_dir "coverage-requests"
+  when "lib"
+    add_filter SubsetFilesFilter.new(:lib)
+    coverage_dir "coverage-lib"
   end
 end
 

@@ -1,6 +1,6 @@
 SPEC ?= spec
 
-.PHONY: all build spec brakeman
+.PHONY: all build spec models requests lib rubocop brakeman update
 
 all: build spec brakeman
 
@@ -21,6 +21,9 @@ models:
 
 requests:
 	docker run --rm -e COVERAGE=requests -v `pwd`:/cell -it cell:latest bundle exec rspec spec/requests
+
+lib:
+	docker run --rm -e COVERAGE=lib -v `pwd`:/cell -it cell:latest bundle exec rspec spec/lib
 
 rubocop:
 	docker run --rm -v `pwd`:/cell -it cell:latest bundle exec rubocop -D

@@ -40,6 +40,11 @@ pipeline {
             sh("docker run --rm -e COVERAGE=requests -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/requests")
           }
         }
+        stage("Library specs") {
+          steps {
+            sh("docker run --rm -e COVERAGE=lib -i smartbox/cell:${GIT_COMMIT} bundle exec rspec spec/lib")
+          }
+        }
         stage("All specs") {
           steps {
             sh("docker run --rm -i smartbox/cell:${GIT_COMMIT} bundle exec rspec")
