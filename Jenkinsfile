@@ -22,12 +22,12 @@ pipeline {
       parallel {
         stage("Style analysis") {
           steps {
-            sh("docker run --rm -t smartbox/cell:${GIT_COMMIT} bundle exec rubocop --no-color -D")
+            sh("docker run --rm smartbox/cell:${GIT_COMMIT} bundle exec rubocop --no-color -D")
           }
         }
         stage("Security analysis") {
           steps {
-            sh("docker run --rm -t smartbox/cell:${GIT_COMMIT} bundle exec brakeman --no-color -zA")
+            sh("docker run --rm smartbox/cell:${GIT_COMMIT} bundle exec brakeman --no-color -zA")
           }
         }
         stage("Model specs") {
