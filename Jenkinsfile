@@ -20,7 +20,7 @@ pipeline {
     }
     stage("Analyze image") {
       parallel {
-        stage("Coding style analysis") {
+        stage("Style analysis") {
           steps {
             sh("docker run --rm -i smartbox/cell:${GIT_COMMIT} bundle exec rubocop -D")
           }
