@@ -3,6 +3,10 @@ language: ruby
 rvm:
   - 2.2
 
+env:
+  global:
+    - CODECLIMATE_REPO_TOKEN=6b0ce4d30c0e3434c2683f1aa4409dc59dc5a88efa9bc90a8459405f768e4d08
+
 cache:
   bundler: true
 
@@ -10,3 +14,4 @@ script:
   - bundle exec rubocop -D
   - bundle exec rspec
   - bundle exec brakeman -zA
+  - bundle exec codeclimate-test-reporter
