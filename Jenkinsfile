@@ -11,7 +11,7 @@ pipeline {
         }
       }
     }
-    stage("Build image") {
+    stage("Build development image") {
       steps {
         script {
           docker.build("smartbox/cell:${GIT_COMMIT}")
@@ -52,11 +52,18 @@ pipeline {
         }
       }
     }
-    stage("Publish image") {
+    stage ("Build production image") {
+      steps {
+        script {
+          docker.build("smartbox/cell:${GIT_COMMIT}-production", "-f Dockerfile.production .")
+        }
+      }
+    }
+    stage("Publish production image") {
       steps {
         script {
           docker.withRegistry("https://registry.hub.docker.com", "docker-hub-credentials") {
-            docker.image("smartbox/cell:${GIT_COMMIT}").push("latest")
+            docker.image("smartbox/cell:${GIT_COMMIT}-production").push("latest")
           }
         }
       }
