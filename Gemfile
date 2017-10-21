@@ -27,7 +27,6 @@ end
 
 group :test do
   gem "brakeman"
-  gem "codeclimate-test-reporter"
   gem "factory_girl_rails"
   gem "rspec-rails"
   gem "rubocop"

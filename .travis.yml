@@ -5,13 +5,21 @@ rvm:
 
 env:
   global:
-    - CODECLIMATE_REPO_TOKEN=6b0ce4d30c0e3434c2683f1aa4409dc59dc5a88efa9bc90a8459405f768e4d08
+    - CC_TEST_REPORTER_ID=6b0ce4d30c0e3434c2683f1aa4409dc59dc5a88efa9bc90a8459405f768e4d08
 
 cache:
   bundler: true
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
   - bundle exec rubocop -D
   - bundle exec rspec
   - bundle exec brakeman -zA
   - bundle exec codeclimate-test-reporter
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
