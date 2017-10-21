@@ -27,7 +27,7 @@ end
 
 group :test do
   gem "brakeman"
-  gem "factory_girl_rails"
+  gem "factory_bot_rails"
   gem "rspec-rails"
   gem "rubocop"
   gem "rubocop-rspec"
