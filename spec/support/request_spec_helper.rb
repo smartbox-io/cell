@@ -1,17 +1,17 @@
 module RequestSpecHelper
-  def basic_auth(user)
+  def basic_auth(username = "username", password = "password")
     {
       HTTP_AUTHORIZATION: ActionController::HttpAuthentication::Basic.encode_credentials(
-        user.username,
-        "password"
+        username,
+        password
       )
     }
   end
 
-  def token_auth(user)
-    access_token = user.access_and_refresh_tokens
+  def token_auth(token = nil)
+    token ||= "jwt-token"
     {
-      AUTHORIZATION: "Bearer #{access_token[:access_token]}"
+      AUTHORIZATION: "Bearer #{token}"
     }
   end
 

@@ -45,7 +45,7 @@ class Cell
 
   def self.mountpoints
     File.open("/proc/mounts", "r", &:readlines).map do |line|
-      device, mountpoint = line.scan(/^([^\s]+)\s+([^\s]+)/)
+      device, mountpoint = line.scan(/^([^\s]+)\s+([^\s]+)/).first
       [device, mountpoint]
     end
   end
@@ -57,7 +57,8 @@ class Cell
   end
 
   def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)
-    perform_request cell_ip: cell_ip, path: path, method: method, payload: payload, query: query
+    response = perform_request cell_ip: cell_ip, path: path, method: method, payload: payload,
+                               query: query
     json_response = begin
                       JSON.parse response.body, symbolize_names: true
                     rescue JSON::ParserError

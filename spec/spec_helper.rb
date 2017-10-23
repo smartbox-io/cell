@@ -14,6 +14,8 @@ class SubsetFilesFilter < SimpleCov::Filter
 end
 
 SimpleCov.start "rails" do
+  minimum_coverage 100
+
   case ENV["COVERAGE"]
   when "models"
     add_filter SubsetFilesFilter.new(:models)
@@ -46,6 +48,8 @@ require "rspec-rails"
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  config.include ActionDispatch::TestProcess
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
@@ -115,6 +119,9 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = :random
+
+  # Load fixtures
+  config.fixture_path = File.join Rails.root, "spec", "fixtures"
 
   config.include JsonSpecHelper, type: :request
   config.include RequestSpecHelper, type: :request

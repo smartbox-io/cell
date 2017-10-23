@@ -2,8 +2,8 @@ class Brain
   require "net/http"
 
   def self.request(path:, method: :get, payload: nil, query: nil, access_token: nil)
-    perform_request path: path, method: method, payload: payload, query: query,
-                  access_token: access_token
+    response = perform_request path: path, method: method, payload: payload, query: query,
+                               access_token: access_token
     json_response = begin
                       JSON.parse response.body, symbolize_names: true
                     rescue JSON::ParserError
