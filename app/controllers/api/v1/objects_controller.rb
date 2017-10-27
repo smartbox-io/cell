@@ -23,7 +23,6 @@ class Api::V1::ObjectsController < ApplicationController
     unless Brain.ok?(path:         "/cluster-api/v1/upload-tokens/#{params[:upload_token]}",
                      query:        { client_ip: request.remote_ip },
                      access_token: @jwt) do |json_response|
-             puts json_response
              @volume = json_response[:volume]
            end
       forbidden
