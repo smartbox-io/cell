@@ -1,2 +1,7 @@
 .git
 .gitignore
+coverage
+coverage-models
+coverage-requests
+coverage-lib
+log
