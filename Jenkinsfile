@@ -3,6 +3,11 @@ pipeline {
     label "docker"
   }
   stages {
+    stage("Report environment") {
+      steps {
+        sh("env")
+      }
+    }
     stage("Retrieve build information") {
       steps {
         script {
