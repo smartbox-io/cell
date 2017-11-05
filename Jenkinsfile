@@ -3,16 +3,20 @@ pipeline {
     label "docker"
   }
   stages {
-    stage("Report environment") {
-      steps {
-        sh("env")
-      }
-    }
-    stage("Retrieve build information") {
-      steps {
-        script {
-          GIT_BRANCH = sh(returnStdout: true, script: "git rev-parse --abbrev-ref HEAD").trim()
-          GIT_COMMIT = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
+    stage("Retrieve build environment") {
+      parallel {
+        stage("Retrieve environment") {
+          steps {
+            sh("env")
+          }
+        }
+        stage("Retrieve build information") {
+          steps {
+            script {
+              GIT_BRANCH = sh(returnStdout: true, script: "git rev-parse --abbrev-ref HEAD").trim()
+              GIT_COMMIT = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
+            }
+          }
         }
       }
     }
