@@ -54,22 +54,22 @@ pipeline {
             sh("docker run --rm -t smartbox/cell:${GIT_COMMIT} bundle exec rspec --no-color")
           }
         }
-        stage("Integration tests") {
-          steps {
-            script {
-              build job: "integration/${INTEGRATION_BRANCH}", parameters: [
-                string(name: "CELL_BRANCH", value: GIT_BRANCH),
-                string(name: "CELL_NUMBER", value: CELL_NUMBER)
-              ]
-            }
-          }
-        }
       }
     }
     stage ("Build production image") {
       steps {
         script {
           docker.build("smartbox/cell:${GIT_COMMIT}-production", "-f Dockerfile.production .")
+        }
+      }
+    }
+    stage("Integration tests") {
+      steps {
+        script {
+          build job: "integration/${INTEGRATION_BRANCH}", parameters: [
+            string(name: "CELL_BRANCH", value: GIT_BRANCH),
+            string(name: "CELL_NUMBER", value: CELL_NUMBER)
+          ]
         }
       }
     }
