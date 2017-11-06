@@ -2,21 +2,15 @@ pipeline {
   agent {
     label "docker"
   }
+  parameters {
+    string(name: "INTEGRATION_COMMIT", defaultValue: "master", description: "Integration project commit to build with")
+  }
   stages {
     stage("Retrieve build environment") {
-      parallel {
-        stage("Retrieve environment") {
-          steps {
-            sh("env")
-          }
-        }
-        stage("Retrieve build information") {
-          steps {
-            script {
-              GIT_BRANCH = sh(returnStdout: true, script: "git rev-parse --abbrev-ref HEAD").trim()
-              GIT_COMMIT = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
-            }
-          }
+      steps {
+        script {
+          GIT_BRANCH = sh(returnStdout: true, script: "git rev-parse --abbrev-ref HEAD").trim()
+          GIT_COMMIT = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
         }
       }
     }
@@ -80,7 +74,10 @@ pipeline {
     stage("Run integration tests") {
       steps {
         script {
-          build job: "integration/master"
+          build job: "integration/master", parameters: [
+            string(name: "INTEGRATION_COMMIT", value: INTEGRATION_COMMIT),
+            string(name: "CELL_COMMIT", value: GIT_COMMIT)
+          ]
         }
       }
     }
