@@ -3,7 +3,7 @@ pipeline {
     label "docker"
   }
   parameters {
-    string(name: "INTEGRATION_COMMIT", defaultValue: "master", description: "Integration project commit to build with")
+    string(name: "INTEGRATION_BRANCH", defaultValue: "master", description: "Integration project branch to build with")
   }
   stages {
     stage("Retrieve build environment") {
@@ -53,12 +53,11 @@ pipeline {
             sh("docker run --rm -t smartbox/cell:${GIT_COMMIT} bundle exec rspec --no-color")
           }
         }
-        stage("Run integration tests") {
+        stage("Integration tests") {
           steps {
             script {
-              build job: "integration/master", parameters: [
-                string(name: "INTEGRATION_COMMIT", value: INTEGRATION_COMMIT),
-                string(name: "CELL_COMMIT", value: GIT_COMMIT)
+              build job: "integration/${INTEGRATION_BRANCH}", parameters: [
+                string(name: "CELL_BRANCH", value: GIT_BRANCH)
               ]
             }
           }
