@@ -59,7 +59,7 @@ pipeline {
       steps {
         script {
           build job: "integration/${INTEGRATION_BRANCH}", parameters: [
-            string(name: "CELL_COMMIT", value: GIT_BRANCH),
+            string(name: "CELL_COMMIT", value: GIT_COMMIT),
             string(name: "CELL_NUMBER", value: CELL_NUMBER)
           ]
         }
