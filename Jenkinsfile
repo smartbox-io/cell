@@ -70,7 +70,7 @@ pipeline {
         }
       }
     }
-    stage("Integration tests") {
+    stage("Run integration tests") {
       steps {
         script {
           build job: "integration/master", parameters: [
