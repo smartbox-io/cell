@@ -3,11 +3,18 @@ pipeline {
     label "docker"
   }
   parameters {
+    string(name: "CELL_COMMIT", defaultValue: "", description: "Force revision to this specific commit")
+    booleanParam(name: "SKIP_INTEGRATION", defaultValue: false, description: "Whether integration should be skipped")
     string(name: "CELL_NUMBER", defaultValue: "1", description: "Integration. Number of cells to deploy")
   }
   stages {
     stage("Retrieve build environment") {
       steps {
+        script {
+          if (CELL_COMMIT) {
+            GIT_COMMIT = CELL_COMMIT
+          }
+        }
         script {
           GIT_COMMIT_MESSAGE = sh(returnStdout: true, script: "git rev-list --format=%B --max-count=1 ${GIT_COMMIT}").trim()
         }
@@ -71,6 +78,7 @@ pipeline {
       }
     }
     stage("Run integration tests") {
+      when { expression { !params.SKIP_INTEGRATION } }
       steps {
         script {
           build job: "integration/master", parameters: [
@@ -82,6 +90,7 @@ pipeline {
       }
     }
     stage("Publish production image (public)") {
+      when { expression { !params.SKIP_INTEGRATION } }
       steps {
         script {
           docker.withRegistry("https://registry.hub.docker.com", "docker-hub-credentials") {
