@@ -11,9 +11,9 @@ pipeline {
     stage("Retrieve build environment") {
       steps {
         script {
-          if (CELL_COMMIT) {
-            GIT_COMMIT = CELL_COMMIT
-            sh("git checkout -fb integration ${CELL_COMMIT}")
+          if (params.CELL_COMMIT) {
+            GIT_COMMIT = params.CELL_COMMIT
+            sh("git checkout -fb integration ${params.CELL_COMMIT}")
           }
         }
         script {
@@ -85,7 +85,7 @@ pipeline {
           build job: "integration/master", parameters: [
             text(name: "COMMIT_MESSAGE", value: GIT_COMMIT_MESSAGE),
             string(name: "CELL_COMMIT", value: GIT_COMMIT),
-            string(name: "CELL_NUMBER", value: CELL_NUMBER)
+            string(name: "CELL_NUMBER", value: params.CELL_NUMBER)
           ]
         }
       }
