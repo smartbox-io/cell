@@ -13,6 +13,7 @@ pipeline {
         script {
           if (CELL_COMMIT) {
             GIT_COMMIT = CELL_COMMIT
+            sh("git checkout -fb integration ${CELL_COMMIT}")
           }
         }
         script {
