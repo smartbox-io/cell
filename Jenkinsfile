@@ -11,8 +11,8 @@ pipeline {
     stage("Retrieve build environment") {
       steps {
         script {
-          if (params.CELL_COMMIT) {
-            GIT_COMMIT = params.CELL_COMMIT
+          if (CELL_COMMIT) {
+            GIT_COMMIT = CELL_COMMIT
           }
         }
         script {
