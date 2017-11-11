@@ -101,7 +101,7 @@ pipeline {
       }
     }
   }
- post {
+  post {
     always {
       sh("docker rmi -f --no-prune smartbox/cell:${GIT_COMMIT}")
       sh("docker rmi -f --no-prune smartbox/cell:${GIT_COMMIT}-production")
