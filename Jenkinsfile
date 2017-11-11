@@ -69,7 +69,7 @@ pipeline {
         }
       }
     }
-    stage ("Publish production image (internal)") {
+    stage ("Internal publish") {
       steps {
         script {
           docker.withRegistry("https://registry.smartbox.io/") {
@@ -90,7 +90,7 @@ pipeline {
         }
       }
     }
-    stage("Publish production image (public)") {
+    stage("Publish") {
       when { expression { !params.SKIP_INTEGRATION } }
       steps {
         script {
@@ -99,6 +99,13 @@ pipeline {
           }
         }
       }
+    }
+  }
+ post {
+    always {
+      sh("docker rmi -f --no-prune smartbox/cell:${GIT_COMMIT}")
+      sh("docker rmi -f --no-prune smartbox/cell:${GIT_COMMIT}-production")
+      sh("docker rmi -f --no-prune registry.smartbox.io/smartbox/cell:${GIT_COMMIT}")
     }
   }
 }
