@@ -91,7 +91,7 @@ pipeline {
       }
     }
     stage("Publish") {
-      when { expression { !params.SKIP_INTEGRATION } }
+      when { expression { BRANCH_NAME == "master" && !params.SKIP_INTEGRATION } }
       steps {
         script {
           docker.withRegistry("https://registry.hub.docker.com", "docker-hub-credentials") {
