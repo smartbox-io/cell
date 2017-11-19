@@ -1,5 +1,7 @@
+# rubocop:disable Metrics/ClassLength
 class Cell
   require "socket"
+  require "pathname"
   require "fileutils"
   require "securerandom"
   require "sys/filesystem"
@@ -25,6 +27,34 @@ class Cell
     Socket.gethostbyname(Socket.gethostname).first
   rescue SocketError
     Socket.gethostname
+  end
+
+  def self.block_devices
+    devices = Pathname.new("/sys/block").children.select do |device|
+      device.directory? && block_device?(device: device)
+    end
+    Hash[devices.map do |device|
+      [device.basename.to_s.to_sym,
+       total_capacity: File.read(File.join(device.to_s, "size")).strip.to_i,
+       partitions:     device_partitions(block_device: device.basename.to_s)]
+    end]
+  end
+
+  def self.block_device?(device:)
+    device.basename.to_s !~ /^loop/ &&
+      (!File.exist?(File.join(device.to_s, "/device/type")) ||
+       File.read(File.join(device.to_s, "/device/type")).strip.to_i.zero?)
+  end
+
+  def self.device_partitions(block_device:)
+    partitions = Pathname.new(File.join("/sys/block", block_device)).children.select do |partition|
+      partition.directory? && partition.basename.to_s =~ /^#{block_device}\d+/
+    end
+    partitions.map! do |partition|
+      [partition.basename.to_s.to_sym,
+       total_capacity: File.read(File.join(partition.to_s, "size")).strip.to_i]
+    end
+    Hash[partitions]
   end
 
   def self.storage_volumes
@@ -90,3 +120,4 @@ class Cell
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 end
+# rubocop:enable Metrics/ClassLength

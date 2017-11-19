@@ -8,6 +8,8 @@ RSpec.describe Cell do
   let(:cell_fqdn) { "cell.example.com" }
   let(:path) { "/some/path" }
   let(:payload) { { some: "payload" } }
+  let(:loop_device) { OpenStruct.new basename: "loop0" }
+  let(:block_device) { OpenStruct.new basename: "sdb" }
   let(:storage_mountpoints) { { "/dev/sdb1" => "/volumes/one", "/dev/sdc1" => "/volumes/two" } }
   let(:capacity) { { total_capacity: 107, available_capacity: 25 } }
 
@@ -74,6 +76,85 @@ RSpec.describe Cell do
 
       it { is_expected.to eq cell_fqdn }
     end
+  end
+
+  describe ".block_devices" do
+    subject { described_class.block_devices }
+
+    let(:partitions) do
+      {
+        sdb1: { total_capacity: 2103296 },
+        sdb2: { total_capacity: 16771072 },
+        sdb3: { total_capacity: 209713152 },
+        sdb4: { total_capacity: 771624960 }
+      }
+    end
+
+    before do
+      allow(Pathname).to receive(:new).with("/sys/block").and_return(
+        OpenStruct.new(children: [OpenStruct.new(basename: "sdb", directory?: true)])
+      )
+      allow(described_class).to receive(:block_device?).and_return true
+      allow(File).to receive(:read).and_return "1000215216"
+      allow(described_class).to receive(:device_partitions).with(block_device: "sdb").and_return(
+        partitions
+      )
+    end
+
+    it { is_expected.to eq sdb: { total_capacity: 1000215216, partitions: partitions } }
+  end
+
+  describe ".block_device?" do
+    context "it is a loop device" do
+      subject { described_class.block_device? device: loop_device }
+
+      it { is_expected.to eq false }
+    end
+
+    context "/device/type is missing" do
+      before do
+        allow(File).to receive(:exist?).and_return false
+      end
+
+      subject { described_class.block_device? device: block_device }
+
+      it { is_expected.to eq true }
+    end
+
+    context "/device/type exists and equals 0" do
+      before do
+        allow(File).to receive(:exist?).and_return true
+        allow(File).to receive(:read).and_return "0"
+      end
+
+      subject { described_class.block_device? device: block_device }
+
+      it { is_expected.to eq true }
+    end
+
+    context "/device/type exists and does not equal 0" do
+      before do
+        allow(File).to receive(:exist?).and_return true
+        allow(File).to receive(:read).and_return "1"
+      end
+
+      subject { described_class.block_device? device: block_device }
+
+      it { is_expected.to eq false }
+    end
+  end
+
+  describe ".device_partitions" do
+    before do
+      allow(Pathname).to receive(:new).with("/sys/block/sdb").and_return(
+        OpenStruct.new(children: [OpenStruct.new(basename: "sdb1", directory?: true)])
+      )
+      allow(File).to receive(:read).and_return "1024"
+    end
+
+    subject { described_class.device_partitions block_device: "sdb" }
+
+    it { is_expected.to eq(sdb1: { total_capacity: 1024 }) }
   end
 
   describe ".storage_volumes" do
