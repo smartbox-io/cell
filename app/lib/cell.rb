@@ -1,4 +1,3 @@
-# rubocop:disable Metrics/ClassLength
 class Cell
   require "socket"
   require "pathname"
@@ -91,4 +90,3 @@ class Cell
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 end
-# rubocop:enable Metrics/ClassLength

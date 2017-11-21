@@ -157,59 +157,6 @@ RSpec.describe Cell do
     it { is_expected.to eq(sdb1: { total_capacity: 1024 }) }
   end
 
-  describe ".storage_volumes" do
-    before do
-      allow(described_class).to receive(:storage_mountpoints).and_return storage_mountpoints
-      allow(Sys::Filesystem).to receive(:stat)
-        .and_return(OpenStruct.new(blocks: 26214144, blocks_available: 6209006, block_size: 4096),
-                    OpenStruct.new(blocks: 26214144, blocks_available: 6209006, block_size: 4096))
-    end
-
-    it "is expected to return the mountpoint along with the capacity" do
-      expect(described_class.storage_volumes).to match(
-        "/volumes/one" => capacity,
-        "/volumes/two" => capacity
-      )
-    end
-  end
-
-  describe ".capacity" do
-    let(:fs) { OpenStruct.new blocks: 26214144, blocks_available: 6209006, block_size: 4096 }
-
-    it "is expected to return the capacity" do
-      expect(described_class.capacity(fs: fs)).to match capacity
-    end
-  end
-
-  describe ".mountpoints" do
-    let(:mountpoints) do
-      ["/dev/sdb1 /volumes/one", "/dev/sdc1 /volumes/two"]
-    end
-
-    before do
-      allow(File).to receive(:open).with("/proc/mounts", "r").and_return mountpoints
-    end
-
-    it "returns tuples with device and mountpoint" do
-      expect(described_class.mountpoints).to eq [["/dev/sdb1", "/volumes/one"],
-                                                 ["/dev/sdc1", "/volumes/two"]]
-    end
-  end
-
-  describe ".storage_mountpoints" do
-    before do
-      allow(described_class).to receive(:mountpoints).and_return(
-        [["/dev/sda1", "/"],
-         ["/dev/sdb1", "/volumes/one"],
-         ["/dev/sdc1", "/volumes/two"]]
-      )
-    end
-
-    it "filters out non storage mountpoints" do
-      expect(described_class.storage_mountpoints).to match storage_mountpoints
-    end
-  end
-
   describe ".request" do
     before do
       # rubocop:disable RSpec/AnyInstance
