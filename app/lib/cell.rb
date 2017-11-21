@@ -57,35 +57,6 @@ class Cell
     Hash[partitions]
   end
 
-  def self.storage_volumes
-    Hash[
-      storage_mountpoints.values.map do |mountpoint|
-        fs = Sys::Filesystem.stat mountpoint
-        [mountpoint, capacity(fs: fs)]
-      end
-    ]
-  end
-
-  def self.capacity(fs:)
-    {
-      total_capacity:     (fs.blocks * fs.block_size) / 1000 / 1000 / 1000,
-      available_capacity: (fs.blocks_available * fs.block_size) / 1000 / 1000 / 1000
-    }
-  end
-
-  def self.mountpoints
-    File.open("/proc/mounts", "r", &:readlines).map do |line|
-      device, mountpoint = line.scan(/^([^\s]+)\s+([^\s]+)/).first
-      [device, mountpoint]
-    end
-  end
-
-  def self.storage_mountpoints
-    Hash[
-      mountpoints.select { |_, mountpoint| mountpoint =~ /^\/volumes/ }
-    ]
-  end
-
   def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)
     response = perform_request cell_ip: cell_ip, path: path, method: method, payload: payload,
                                query: query

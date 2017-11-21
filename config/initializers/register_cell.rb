@@ -6,7 +6,6 @@ if Rails.env.production?
                            uuid:              Cell.uuid,
                            fqdn:              Cell.fqdn,
                            block_devices:     Cell.block_devices,
-                           volumes:           Cell.storage_volumes,
                            public_ip_address: ENV["HOST_IP_ADDRESS"]
                          }
                        })
