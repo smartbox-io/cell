@@ -19,10 +19,6 @@ module RequestSpecHelper
     { "Content-Type" => content_type }
   end
 
-  def json_content_type
-    content_type "application/json"
-  end
-
   def ip(ip)
     { REMOTE_ADDR: ip }
   end

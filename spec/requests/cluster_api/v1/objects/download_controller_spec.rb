@@ -34,8 +34,8 @@ RSpec.describe ClusterApi::V1::Objects::DownloadController do
 
     def show(remote_ip: target_cell_ip_address)
       get cluster_api_v1_download_path(object_uuid),
-          params:  show_params.to_json,
-          headers: ip(remote_ip).merge(json_content_type)
+          params:  show_params,
+          headers: ip(remote_ip)
     end
 
     context "it has permissions" do

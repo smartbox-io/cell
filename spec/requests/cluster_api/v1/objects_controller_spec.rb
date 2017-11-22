@@ -31,8 +31,7 @@ RSpec.describe ClusterApi::V1::ObjectsController do
   describe "#create" do
 
     def create
-      post cluster_api_v1_objects_path, params:  create_params.to_json,
-                                        headers: json_content_type
+      post cluster_api_v1_objects_path, params: create_params
     end
 
     context "it has permissions" do
