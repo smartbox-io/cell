@@ -34,7 +34,7 @@ class Cell
     end
     Hash[devices.map do |device|
       [device.basename.to_s.to_sym,
-       total_capacity: File.read(File.join(device.to_s, "size")).strip.to_i,
+       total_capacity: File.read(File.join(device.to_s, "size")).strip.to_i * 512,
        partitions:     device_partitions(block_device: device.basename.to_s)]
     end]
   end
@@ -51,7 +51,7 @@ class Cell
     end
     partitions.map! do |partition|
       [partition.basename.to_s.to_sym,
-       total_capacity: File.read(File.join(partition.to_s, "size")).strip.to_i]
+       total_capacity: File.read(File.join(partition.to_s, "size")).strip.to_i * 512]
     end
     Hash[partitions]
   end

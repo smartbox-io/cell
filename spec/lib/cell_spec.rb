@@ -3,15 +3,15 @@ require "cell"
 
 RSpec.describe Cell do
 
-  let(:cell_uuid) { SecureRandom.uuid }
-  let(:cell_ip) { "127.0.0.1" }
-  let(:cell_fqdn) { "cell.example.com" }
-  let(:path) { "/some/path" }
-  let(:payload) { { some: "payload" } }
-  let(:loop_device) { OpenStruct.new basename: "loop0" }
-  let(:block_device) { OpenStruct.new basename: "sdb" }
+  let(:cell_uuid)           { SecureRandom.uuid }
+  let(:cell_ip)             { "127.0.0.1" }
+  let(:cell_fqdn)           { "cell.example.com" }
+  let(:path)                { "/some/path" }
+  let(:payload)             { { some: "payload" } }
+  let(:loop_device)         { OpenStruct.new basename: "loop0" }
+  let(:block_device)        { OpenStruct.new basename: "sdb" }
   let(:storage_mountpoints) { { "/dev/sdb1" => "/volumes/one", "/dev/sdc1" => "/volumes/two" } }
-  let(:capacity) { { total_capacity: 107, available_capacity: 25 } }
+  let(:capacity)            { { total_capacity: 107, available_capacity: 25 } }
 
   describe ".digest_contents" do
     subject { described_class.digest_contents "some contents" }
@@ -101,7 +101,7 @@ RSpec.describe Cell do
       )
     end
 
-    it { is_expected.to eq sdb: { total_capacity: 1000215216, partitions: partitions } }
+    it { is_expected.to eq sdb: { total_capacity: (1000215216 * 512), partitions: partitions } }
   end
 
   describe ".block_device?" do
@@ -154,7 +154,7 @@ RSpec.describe Cell do
 
     subject { described_class.device_partitions block_device: "sdb" }
 
-    it { is_expected.to eq(sdb1: { total_capacity: 1024 }) }
+    it { is_expected.to eq(sdb1: { total_capacity: (1024 * 512) }) }
   end
 
   describe ".request" do
