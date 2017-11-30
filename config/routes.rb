@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   namespace :admin_api, path: "admin-api" do
     namespace :v1 do
       resources :objects, only: :create, param: :uuid
-      resource :volumes, only: %i[show update]
+      resource :block_devices, path: "block-devices", only: %i[show update]
     end
   end
   mount Sidekiq::Web => "/sidekiq" unless Rails.env.production?
