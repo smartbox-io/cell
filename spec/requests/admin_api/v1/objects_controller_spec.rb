@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe ClusterApi::V1::ObjectsController do
+RSpec.describe AdminApi::V1::ObjectsController do
 
   subject { response }
 
@@ -31,7 +31,7 @@ RSpec.describe ClusterApi::V1::ObjectsController do
   describe "#create" do
 
     def create
-      post cluster_api_v1_objects_path, params: create_params
+      post admin_api_v1_objects_path, params: create_params
     end
 
     context "it has permissions" do
