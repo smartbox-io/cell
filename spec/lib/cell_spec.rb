@@ -78,6 +78,45 @@ RSpec.describe Cell do
     end
   end
 
+  describe ".mount_block_devices" do
+    let(:block_devices)       { %w[sda sdb sdc] }
+    let(:mount_block_devices) { described_class.mount_block_devices block_devices: block_devices }
+
+    before do
+      allow(described_class).to receive(:block_devices).and_return sda: [], sdb: [], sdc: []
+      allow(described_class).to receive(:mount_block_device).exactly(block_devices.count).times
+                                                            .and_return true
+    end
+
+    it "calls .mount_block_device with the expected parameters" do
+      mount_block_devices
+      expect(described_class).to have_received(:mount_block_device).exactly(block_devices.count)
+                                                                   .times
+    end
+  end
+
+  describe ".mount_block_device" do
+    let(:block_device)       { "sdb" }
+    let(:block_device_dev)   { "/dev/#{block_device}" }
+    let(:volume)             { "/volumes/#{block_device}" }
+    let(:mount_args)         { "mount #{block_device_dev} #{volume}" }
+    let(:mount_block_device) { described_class.mount_block_device block_device: block_device }
+
+    before do
+      allow(FileUtils).to receive(:mkdir_p).with(volume).once
+      allow(described_class).to receive(:system).with(mount_args).once
+      mount_block_device
+    end
+
+    it "creates the mountpoint" do
+      expect(FileUtils).to have_received(:mkdir_p).with(volume).once
+    end
+
+    it "mounts the device" do
+      expect(described_class).to have_received(:system).with(mount_args).once
+    end
+  end
+
   describe ".block_devices" do
     subject { described_class.block_devices }
 

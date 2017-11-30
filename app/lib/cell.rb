@@ -28,6 +28,20 @@ class Cell
     Socket.gethostname
   end
 
+  def self.mount_block_devices(block_devices:)
+    successful_mounts = []
+    block_devices.each do |block_device|
+      next unless self.block_devices.keys.include? block_device.to_sym
+      successful_mounts << block_device if Cell.mount_block_device block_device: block_device
+    end
+    successful_mounts
+  end
+
+  def self.mount_block_device(block_device:)
+    FileUtils.mkdir_p "/volumes/#{block_device}"
+    system "mount /dev/#{block_device} /volumes/#{block_device}"
+  end
+
   def self.block_devices
     devices = Pathname.new("/sys/block").children.select do |device|
       device.directory? && block_device?(device: device)
