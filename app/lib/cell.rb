@@ -73,8 +73,8 @@ class Cell
   end
 
   def self.device_partitions(block_device:)
-    partitions = Pathname.new(File.join("/sys/block", block_device)).children.select do |partition|
-      partition.directory? && partition.basename.to_s =~ /^#{block_device}\d+/
+    partitions = Pathname.new(File.join("/sys/block", block_device.to_s)).children.select do |p|
+      p.directory? && p.basename.to_s =~ /^#{block_device}\d+/
     end
     partitions.map! do |partition|
       [partition.basename.to_s.to_sym,
