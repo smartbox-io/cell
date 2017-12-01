@@ -2,6 +2,7 @@ require "spec_helper"
 
 RSpec.describe MountBlockDevicesJob do
 
+  let(:cell_uuid)     { SecureRandom.uuid }
   let(:block_devices) { %w[sdb sdc sdd] }
   let(:block_device_partitions) do
     {
@@ -42,6 +43,7 @@ RSpec.describe MountBlockDevicesJob do
   end
 
   before do
+    allow(Cell).to receive(:uuid).and_return cell_uuid
     allow(Cell).to receive(:mount_block_devices).with(block_devices: block_devices)
                                                 .and_return block_device_partitions
     allow(Brain).to receive(:request).with block_devices_params
