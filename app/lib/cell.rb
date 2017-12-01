@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class Cell
   require "socket"
   require "pathname"
@@ -29,17 +30,29 @@ class Cell
   end
 
   def self.mount_block_devices(block_devices:)
-    successful_mounts = []
-    block_devices.each do |block_device|
-      next unless self.block_devices.keys.include? block_device.to_sym
-      successful_mounts << block_device if Cell.mount_block_device block_device: block_device
+    {}.tap do |successful_mounts|
+      block_devices.each do |block_device|
+        next unless self.block_devices.keys.include? block_device.to_sym
+        successful_mounts[block_device] = {
+          partitions: mount_block_device(block_device: block_device)
+        }
+      end
     end
-    successful_mounts
   end
 
   def self.mount_block_device(block_device:)
-    FileUtils.mkdir_p "/volumes/#{block_device}"
-    system "mount /dev/#{block_device} /volumes/#{block_device}"
+    [].tap do |successful_mounts|
+      device_partitions(block_device: block_device).each_key do |block_device_partition|
+        if mount_block_device_partition block_device_partition: block_device_partition
+          successful_mounts << block_device_partition
+        end
+      end
+    end
+  end
+
+  def self.mount_block_device_partition(block_device_partition:)
+    FileUtils.mkdir_p "/volumes/#{block_device_partition}"
+    system "mount /dev/#{block_device_partition} /volumes/#{block_device_partition}"
   end
 
   def self.block_devices
@@ -104,3 +117,4 @@ class Cell
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 end
+# rubocop:enable Metrics/ClassLength

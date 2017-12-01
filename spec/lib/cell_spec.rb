@@ -79,28 +79,53 @@ RSpec.describe Cell do
   end
 
   describe ".mount_block_devices" do
-    let(:block_devices)       { %w[sda sdb sdc] }
-    let(:mount_block_devices) { described_class.mount_block_devices block_devices: block_devices }
+    subject { mount_block_devices }
+
+    let(:block_devices)                { %i[sda sdb sdc] }
+    let(:mount_block_devices)          do
+      described_class.mount_block_devices block_devices: block_devices
+    end
+    let(:block_devices_and_partitions) do
+      {
+        sda: { partitions: [:sdx1] },
+        sdb: { partitions: [:sdx1] },
+        sdc: { partitions: [:sdx1] }
+      }
+    end
 
     before do
       allow(described_class).to receive(:block_devices).and_return sda: [], sdb: [], sdc: []
-      allow(described_class).to receive(:mount_block_device).exactly(block_devices.count).times
-                                                            .and_return true
+      allow(described_class).to receive(:mount_block_device)
+        .exactly(block_devices.count).times.and_return [:sdx1]
     end
 
-    it "calls .mount_block_device with the expected parameters" do
-      mount_block_devices
-      expect(described_class).to have_received(:mount_block_device).exactly(block_devices.count)
-                                                                   .times
-    end
+    it { is_expected.to match block_devices_and_partitions }
   end
 
   describe ".mount_block_device" do
-    let(:block_device)       { "sdb" }
-    let(:block_device_dev)   { "/dev/#{block_device}" }
-    let(:volume)             { "/volumes/#{block_device}" }
-    let(:mount_args)         { "mount #{block_device_dev} #{volume}" }
-    let(:mount_block_device) { described_class.mount_block_device block_device: block_device }
+    subject { mount_block_device }
+
+    let(:block_device)           { :sda }
+    let(:block_device_partition) { :sda1 }
+    let(:mount_block_device)     { described_class.mount_block_device block_device: block_device }
+
+    before do
+      allow(described_class).to receive(:device_partitions).and_return(sda1: {})
+      allow(described_class).to receive(:mount_block_device_partition)
+        .with(block_device_partition: block_device_partition).and_return true
+    end
+
+    it { is_expected.to match [block_device_partition] }
+  end
+
+  describe ".mount_block_device_partition" do
+    let(:block_device_partition)     { :sdb }
+    let(:block_device_partition_dev) { "/dev/#{block_device_partition}" }
+    let(:volume)                     { "/volumes/#{block_device_partition}" }
+    let(:mount_args)                 { "mount #{block_device_partition_dev} #{volume}" }
+    let(:mount_block_device) do
+      described_class.mount_block_device_partition block_device_partition: block_device_partition
+    end
 
     before do
       allow(FileUtils).to receive(:mkdir_p).with(volume).once
