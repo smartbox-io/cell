@@ -4,43 +4,46 @@ RSpec.describe MountBlockDevicesJob do
 
   let(:cell_uuid)     { SecureRandom.uuid }
   let(:block_devices) { %w[sdb sdc sdd] }
-  let(:block_device_partitions) do
-    {
-      sdb: {
-        partitions: %i[sdb1 sdb2]
+  let(:block_device_volumes) do
+    [
+      {
+        device:  :sdb,
+        volumes: %i[sdb1 sdb2]
       },
-      sdc: {
-        partitions: %i[sdc1 sdc2]
+      {
+        device:  :sdc,
+        volumes: %i[sdc1 sdc2]
       },
-      sdd: {
-        partitions: %i[sdd1 sdd2]
+      {
+        device:  :sdd,
+        volumes: %i[sdd1 sdd2]
       }
-    }
+    ]
   end
   let(:block_devices_payload) do
     [
       {
-        device:     :sdb,
-        status:     :healthy,
-        partitions: [
-          { partition: :sdb1, status: :healthy },
-          { partition: :sdb2, status: :healthy }
+        device:  :sdb,
+        status:  :healthy,
+        volumes: [
+          { volume: :sdb1, status: :healthy },
+          { volume: :sdb2, status: :healthy }
         ]
       },
       {
-        device:     :sdc,
-        status:     :healthy,
-        partitions: [
-          { partition: :sdc1, status: :healthy },
-          { partition: :sdc2, status: :healthy }
+        device:  :sdc,
+        status:  :healthy,
+        volumes: [
+          { volume: :sdc1, status: :healthy },
+          { volume: :sdc2, status: :healthy }
         ]
       },
       {
-        device:     :sdd,
-        status:     :healthy,
-        partitions: [
-          { partition: :sdd1, status: :healthy },
-          { partition: :sdd2, status: :healthy }
+        device:  :sdd,
+        status:  :healthy,
+        volumes: [
+          { volume: :sdd1, status: :healthy },
+          { volume: :sdd2, status: :healthy }
         ]
       }
     ]
@@ -60,7 +63,7 @@ RSpec.describe MountBlockDevicesJob do
   before do
     allow(Cell).to receive(:uuid).and_return cell_uuid
     allow(Cell).to receive(:mount_block_devices).with(block_devices: block_devices)
-                                                .and_return block_device_partitions
+                                                .and_return block_device_volumes
     allow(Brain).to receive(:request).with block_devices_params
     described_class.perform_now block_devices: block_devices
   end

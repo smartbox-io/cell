@@ -30,11 +30,12 @@ class Cell
   end
 
   def self.mount_block_devices(block_devices:)
-    {}.tap do |successful_mounts|
+    [].tap do |successful_mounts|
       block_devices.each do |block_device|
         next unless self.block_devices.keys.include? block_device.to_sym
-        successful_mounts[block_device] = {
-          partitions: mount_block_device(block_device: block_device)
+        successful_mounts << {
+          device:  block_device,
+          volumes: mount_block_device(block_device: block_device)
         }
       end
     end
@@ -42,28 +43,30 @@ class Cell
 
   def self.mount_block_device(block_device:)
     [].tap do |successful_mounts|
-      device_partitions(block_device: block_device).each_key do |block_device_partition|
-        if mount_block_device_partition block_device_partition: block_device_partition
-          successful_mounts << block_device_partition
+      device_volumes(block_device: block_device).each_key do |block_device_volume|
+        if mount_block_device_volume block_device_volume: block_device_volume
+          successful_mounts << block_device_volume
         end
       end
     end
   end
 
-  def self.mount_block_device_partition(block_device_partition:)
-    FileUtils.mkdir_p "/volumes/#{block_device_partition}"
-    system "mount /dev/#{block_device_partition} /volumes/#{block_device_partition}"
+  def self.mount_block_device_volume(block_device_volume:)
+    FileUtils.mkdir_p "/volumes/#{block_device_volume}"
+    system "mount /dev/#{block_device_volume} /volumes/#{block_device_volume}"
   end
 
   def self.block_devices
     devices = Pathname.new("/sys/block").children.select do |device|
       device.directory? && block_device?(device: device)
     end
-    Hash[devices.map do |device|
-      [device.basename.to_s.to_sym,
-       total_capacity: File.read(File.join(device.to_s, "size")).strip.to_i * 512,
-       partitions:     device_partitions(block_device: device.basename.to_s)]
-    end]
+    devices.map do |device|
+      {
+        device:         device.basename.to_s.to_sym,
+        total_capacity: File.read(File.join(device.to_s, "size")).strip.to_i * 512,
+        volumes:        device_volumes(block_device: device.basename.to_s)
+      }
+    end
   end
 
   def self.block_device?(device:)
@@ -72,15 +75,16 @@ class Cell
        File.read(File.join(device.to_s, "/device/type")).strip.to_i.zero?)
   end
 
-  def self.device_partitions(block_device:)
-    partitions = Pathname.new(File.join("/sys/block", block_device.to_s)).children.select do |p|
+  def self.device_volumes(block_device:)
+    volumes = Pathname.new(File.join("/sys/block", block_device.to_s)).children.select do |p|
       p.directory? && p.basename.to_s =~ /^#{block_device}\d+/
     end
-    partitions.map! do |partition|
-      [partition.basename.to_s.to_sym,
-       total_capacity: File.read(File.join(partition.to_s, "size")).strip.to_i * 512]
+    volumes.map do |volume|
+      {
+        volume:         volume.basename.to_s.to_sym,
+        total_capacity: File.read(File.join(volume.to_s, "size")).strip.to_i * 512
+      }
     end
-    Hash[partitions]
   end
 
   def self.request(cell_ip:, path:, method: :get, payload: nil, query: nil)

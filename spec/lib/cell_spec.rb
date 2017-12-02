@@ -3,15 +3,14 @@ require "cell"
 
 RSpec.describe Cell do
 
-  let(:cell_uuid)           { SecureRandom.uuid }
-  let(:cell_ip)             { "127.0.0.1" }
-  let(:cell_fqdn)           { "cell.example.com" }
-  let(:path)                { "/some/path" }
-  let(:payload)             { { some: "payload" } }
-  let(:loop_device)         { OpenStruct.new basename: "loop0" }
-  let(:block_device)        { OpenStruct.new basename: "sdb" }
-  let(:storage_mountpoints) { { "/dev/sdb1" => "/volumes/one", "/dev/sdc1" => "/volumes/two" } }
-  let(:capacity)            { { total_capacity: 107, available_capacity: 25 } }
+  let(:cell_uuid)    { SecureRandom.uuid }
+  let(:cell_ip)      { "127.0.0.1" }
+  let(:cell_fqdn)    { "cell.example.com" }
+  let(:path)         { "/some/path" }
+  let(:payload)      { { some: "payload" } }
+  let(:loop_device)  { OpenStruct.new basename: "loop0" }
+  let(:block_device) { OpenStruct.new basename: "sdb" }
+  let(:capacity)     { { total_capacity: 107, available_capacity: 25 } }
 
   describe ".digest_contents" do
     subject { described_class.digest_contents "some contents" }
@@ -85,12 +84,12 @@ RSpec.describe Cell do
     let(:mount_block_devices)          do
       described_class.mount_block_devices block_devices: block_devices
     end
-    let(:block_devices_and_partitions) do
-      {
-        sda: { partitions: [:sdx1] },
-        sdb: { partitions: [:sdx1] },
-        sdc: { partitions: [:sdx1] }
-      }
+    let(:block_devices_and_volumes) do
+      [
+        { device: :sda, volumes: [:sdx1] },
+        { device: :sdb, volumes: [:sdx1] },
+        { device: :sdc, volumes: [:sdx1] }
+      ]
     end
 
     before do
@@ -99,32 +98,32 @@ RSpec.describe Cell do
         .exactly(block_devices.count).times.and_return [:sdx1]
     end
 
-    it { is_expected.to match block_devices_and_partitions }
+    it { is_expected.to match block_devices_and_volumes }
   end
 
   describe ".mount_block_device" do
     subject { mount_block_device }
 
-    let(:block_device)           { :sda }
-    let(:block_device_partition) { :sda1 }
-    let(:mount_block_device)     { described_class.mount_block_device block_device: block_device }
+    let(:block_device)        { :sda }
+    let(:block_device_volume) { :sda1 }
+    let(:mount_block_device)  { described_class.mount_block_device block_device: block_device }
 
     before do
-      allow(described_class).to receive(:device_partitions).and_return(sda1: {})
-      allow(described_class).to receive(:mount_block_device_partition)
-        .with(block_device_partition: block_device_partition).and_return true
+      allow(described_class).to receive(:device_volumes).and_return(sda1: {})
+      allow(described_class).to receive(:mount_block_device_volume)
+        .with(block_device_volume: block_device_volume).and_return true
     end
 
-    it { is_expected.to match [block_device_partition] }
+    it { is_expected.to match [block_device_volume] }
   end
 
-  describe ".mount_block_device_partition" do
-    let(:block_device_partition)     { :sdb }
-    let(:block_device_partition_dev) { "/dev/#{block_device_partition}" }
-    let(:volume)                     { "/volumes/#{block_device_partition}" }
-    let(:mount_args)                 { "mount #{block_device_partition_dev} #{volume}" }
+  describe ".mount_block_device_volume" do
+    let(:block_device_volume)     { :sdb }
+    let(:block_device_volume_dev) { "/dev/#{block_device_volume}" }
+    let(:volume)                  { "/volumes/#{block_device_volume}" }
+    let(:mount_args)              { "mount #{block_device_volume_dev} #{volume}" }
     let(:mount_block_device) do
-      described_class.mount_block_device_partition block_device_partition: block_device_partition
+      described_class.mount_block_device_volume block_device_volume: block_device_volume
     end
 
     before do
@@ -145,13 +144,13 @@ RSpec.describe Cell do
   describe ".block_devices" do
     subject { described_class.block_devices }
 
-    let(:partitions) do
-      {
-        sdb1: { total_capacity: 2103296 },
-        sdb2: { total_capacity: 16771072 },
-        sdb3: { total_capacity: 209713152 },
-        sdb4: { total_capacity: 771624960 }
-      }
+    let(:volumes) do
+      [
+        { volume: :sdb1, total_capacity: 2103296 },
+        { volume: :sdb2, total_capacity: 16771072 },
+        { volume: :sdb3, total_capacity: 209713152 },
+        { volume: :sdb4, total_capacity: 771624960 }
+      ]
     end
 
     before do
@@ -160,12 +159,14 @@ RSpec.describe Cell do
       )
       allow(described_class).to receive(:block_device?).and_return true
       allow(File).to receive(:read).and_return "1000215216"
-      allow(described_class).to receive(:device_partitions).with(block_device: "sdb").and_return(
-        partitions
+      allow(described_class).to receive(:device_volumes).with(block_device: "sdb").and_return(
+        volumes
       )
     end
 
-    it { is_expected.to eq sdb: { total_capacity: (1000215216 * 512), partitions: partitions } }
+    it do
+      is_expected.to eq [{ device: :sdb, total_capacity: (1000215216 * 512), volumes: volumes }]
+    end
   end
 
   describe ".block_device?" do
@@ -208,7 +209,7 @@ RSpec.describe Cell do
     end
   end
 
-  describe ".device_partitions" do
+  describe ".device_volumes" do
     before do
       allow(Pathname).to receive(:new).with("/sys/block/sdb").and_return(
         OpenStruct.new(children: [OpenStruct.new(basename: "sdb1", directory?: true)])
@@ -216,9 +217,9 @@ RSpec.describe Cell do
       allow(File).to receive(:read).and_return "1024"
     end
 
-    subject { described_class.device_partitions block_device: "sdb" }
+    subject { described_class.device_volumes block_device: "sdb" }
 
-    it { is_expected.to eq(sdb1: { total_capacity: (1024 * 512) }) }
+    it { is_expected.to eq([{ volume: :sdb1, total_capacity: (1024 * 512) }]) }
   end
 
   describe ".request" do

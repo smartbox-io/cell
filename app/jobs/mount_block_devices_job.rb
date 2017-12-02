@@ -10,18 +10,12 @@ class MountBlockDevicesJob < ApplicationJob
 
   def mount_block_devices(block_devices:)
     block_devices = Cell.mount_block_devices block_devices: block_devices
-    block_devices.map do |block_device, partitions|
+    block_devices.map do |block_device|
       {
-        device:     block_device,
-        status:     :healthy,
-        partitions: device_partitions(partitions: partitions)
+        device:  block_device[:device],
+        status:  :healthy,
+        volumes: block_device[:volumes].map { |volume| { volume: volume, status: :healthy } }
       }
-    end
-  end
-
-  def device_partitions(partitions:)
-    partitions[:partitions].map do |partition|
-      { partition: partition, status: :healthy }
     end
   end
 
