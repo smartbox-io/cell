@@ -18,20 +18,32 @@ RSpec.describe MountBlockDevicesJob do
     }
   end
   let(:block_devices_payload) do
-    {
-      sdb: {
-        status:     :healthy,
-        partitions: { sdb1: { status: :healthy }, sdb2: { status: :healthy } }
+    [
+      {
+        block_device: :sdb,
+        status:       :healthy,
+        partitions:   [
+          { partition: :sdb1, status: :healthy },
+          { partition: :sdb2, status: :healthy }
+        ]
       },
-      sdc: {
-        status:     :healthy,
-        partitions: { sdc1: { status: :healthy }, sdc2: { status: :healthy } }
+      {
+        block_device: :sdc,
+        status:       :healthy,
+        partitions:   [
+          { partition: :sdc1, status: :healthy },
+          { partition: :sdc2, status: :healthy }
+        ]
       },
-      sdd: {
-        status:     :healthy,
-        partitions: { sdd1: { status: :healthy }, sdd2: { status: :healthy } }
+      {
+        block_device: :sdd,
+        status:       :healthy,
+        partitions:   [
+          { partition: :sdd1, status: :healthy },
+          { partition: :sdd2, status: :healthy }
+        ]
       }
-    }
+    ]
   end
   let(:block_devices_params) do
     {
